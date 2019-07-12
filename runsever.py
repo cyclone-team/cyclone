@@ -78,5 +78,27 @@ def login():
     return render_template('login.html', error=error)
 
 
+@app.route('/add',methods=['POST'])
+def add_entry():
+    db_session = db_manager.create_session()
+    if not session.get('logged_in'):
+        flash(401)
+    title = request.form['title']
+    content = request.form['text']
+    category = Summary(sum)
+    db_session.add(category)
+    db_session.commit()
+    flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+
+#登出
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('show_entries'))
+
+
 if __name__ == '__main__':
     app.run(debug=True)
