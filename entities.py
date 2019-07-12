@@ -1,9 +1,9 @@
 # coding = utf-8
 
+import json
+
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship, backref
-import json
 
 # 创建对象的基类：
 Base = declarative_base()
@@ -37,7 +37,7 @@ class Mission(Base):
     __tablename__ = 'mission'
 
     # 表的结构
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.user_id'), primary_key=True,
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                                 nullable=False)
     start_time = sqlalchemy.Column(sqlalchemy.Time, primary_key=True, nullable=False)
     date = sqlalchemy.Column(sqlalchemy.Date, primary_key=True, nullable=False)
@@ -47,7 +47,7 @@ class Mission(Base):
     finish = sqlalchemy.Column(sqlalchemy.Boolean, default=0, nullable=False)
     alarm_time = sqlalchemy.Column(sqlalchemy.Time, nullable=True)
     repeat = sqlalchemy.Column(sqlalchemy.Boolean, default=0, nullable=True)
-    user = relationship("user", backref("mission"))
+
 
     def to_json(self, message=None):
         dict = self.__dict__
@@ -65,11 +65,10 @@ class Mission(Base):
 class Mail(Base):
     __tablename__ = 'mail'
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.user_id'), primary_key=True,
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
                                 nullable=False)
     mail_time = sqlalchemy.Column(sqlalchemy.DateTime, primary_key=True, nullable=False)
     content = sqlalchemy.Column(sqlalchemy.Text, nullable=True)
-    user = relationship("user", backref("mail"))
 
     def to_json(self, message=None):
         dict = self.__dict__
@@ -87,11 +86,10 @@ class Mail(Base):
 class Comment(Base):
     __tablename__ = 'comment'
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.user_id'), primary_key=True,
+    user_id = sqlalchemy.Column(sqlalchemy.Integer,primary_key=True,
                                 nullable=False)
     date = sqlalchemy.Column(sqlalchemy.Date, nullable=False)
     evaluate = sqlalchemy.Column(sqlalchemy.String(70), nullable=True)
-    user = relationship("user", backref("comment"))
 
     def to_json(self, message=None):
         dict = self.__dict__
@@ -109,11 +107,10 @@ class Comment(Base):
 class Summary(Base):
     __tablename__ = 'summary'
 
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey('user.user_id'), primary_key=True,
-                                nullable=False)
+    user_id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, nullable=False)
     date = sqlalchemy.Column(sqlalchemy.Date, nullable=False)
     sum = sqlalchemy.Column(sqlalchemy.Text, nullable=False)
-    user = relationship("user", backref("summary"))
+
 
     def to_json(self, message=None):
         dict = self.__dict__
