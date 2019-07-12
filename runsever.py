@@ -1,17 +1,19 @@
 # coding:utf-8
-from flask import  Flask,request
-from flask_cors import  *
+from flask import request, render_template, flash, url_for, redirect, session, Flask
+from flask_cors import *
 from sqlalchemy.orm.exc import NoResultFound
 
 from DBManager import *
-from entities import  *
-from utils import  *
+from entities import *
+from utils import *
 
 app=Flask(__name__)
 #解决跨域问题
 CORS(app,supports_credentials=True)
 #解决中文显示问题
 app.config['JSON_AS_ASCII']=False
+#设置密钥
+app.config['SECRET_KEY']='CYCLONE_TEMPEST_TORNADO'
 
 #连接数据库
 db_manager=DBManager("mysql+mysqlconnector","47.107.86.216:3306","root","0C45313cea34","timecontrol")
@@ -49,8 +51,31 @@ def create_user():
 
 
 @app.route('/')
-def hello_world():
-    return 'Hello World!'
+def show_entries():
+    db_session = db_manager.create_session()
+    categorys = db_session.query(User)
+    return render_template('show_entries.html', entries=categorys)
+
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    db_session = db_manager.create_session()
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = db_session.query(User).filter_by(account=request.form['username']).first()
+        passwd = db_session.query(User).filter_by(password=request.form['password']).first()
+
+        if user is None:
+            error = 'Invalid username'
+        elif passwd is None:
+            error = 'Invalid password'
+        else:
+            session['logged_in'] = True
+            flash('You were logged in')
+            return redirect(url_for('show_entries'))
+    return render_template('login.html', error=error)
 
 
 if __name__ == '__main__':
